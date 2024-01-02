@@ -4,12 +4,10 @@ networks:
   web-services:
     driver: bridge
 
-
 services:
   web-app:
     build:
       context: .
-#    command: python manage.py runserver 8000
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
     ports:
@@ -17,5 +15,20 @@ services:
     restart: on-failure
     volumes:
       - ./service:/service
+    environment:
+      - DB_HOST=database
+      - DB_NAME=db_name
+      - DB_USER=db_user
+      - DB_PASSWORD=db_psw
+    depends_on:
+      - database
 
-
+  database:
+    image: postgres:14.6-alpine
+    container_name: services_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=db_name
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=db_psw
